@@ -3,9 +3,9 @@ import multer from 'multer';
 import path from 'path';
 import crypto from 'crypto';
 import fs from 'fs/promises';
-import { validatePayload, MAX_RESUME_SIZE } from '../utils/validate';
-import { findSubmissionById, listSubmissions, saveSubmission } from '../storage/store';
-import type { ReferralSubmission } from '../types';
+import { validatePayload, MAX_RESUME_SIZE } from '../utils/validate.js';
+import { findSubmissionById, listSubmissions, saveSubmission } from '../storage/store.js';
+import type { ReferralSubmission } from '../types.js';
 
 const router = Router();
 
@@ -126,3 +126,4 @@ router.post('/', upload.single('resume'), async (req, res) => {
 });
 
 export default router;
+

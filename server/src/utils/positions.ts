@@ -1,4 +1,4 @@
-import { jobs } from '../../data/jobsdescription';
+import { jobs } from '../../data/jobsdescription.js';
 
 export const positions = jobs.map((job) => ({
   id: job.id,
@@ -6,3 +6,4 @@ export const positions = jobs.map((job) => ({
 }));
 
 export const findPosition = (id: number) => positions.find((pos) => pos.id === id);
+

@@ -1,6 +1,6 @@
-import { findPosition } from './positions';
-import { jobs } from '../../data/jobsdescription';
-import type { ValidationError } from '../types';
+import { findPosition } from './positions.js';
+import { jobs } from '../../data/jobsdescription.js';
+import type { ValidationError } from '../types.js';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const NAME_REGEX = /^[A-Za-z ]+$/;
@@ -136,3 +136,4 @@ export const validatePayload = (body: Record<string, unknown>) => {
 
   return { errors, parsed };
 };
+

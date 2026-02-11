@@ -3,9 +3,9 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
-import referralsRouter from './routes/referrals';
-import { jobs } from '../data/jobsdescription';
-import { connectMongo } from './db/mongo';
+import referralsRouter from './routes/referrals.js';
+import { jobs } from '../data/jobsdescription.js';
+import { connectMongo } from './db/mongo.js';
 
 const app = express();
 app.set('trust proxy', 1);
@@ -95,3 +95,4 @@ startServer().catch((error) => {
   console.error('Failed to start server', error);
   process.exit(1);
 });
+

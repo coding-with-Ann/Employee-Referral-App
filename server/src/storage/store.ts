@@ -1,5 +1,5 @@
-import type { ReferralSubmission } from '../types';
-import { ReferralSubmissionModel } from '../models/ReferralSubmission';
+import type { ReferralSubmission } from '../types.js';
+import { ReferralSubmissionModel } from '../models/ReferralSubmission.js';
 
 export const saveSubmission = async (submission: ReferralSubmission) => {
   const maxRecord = await ReferralSubmissionModel.findOne().sort({ id: -1 }).select({ id: 1 }).lean();
@@ -27,3 +27,4 @@ export const findSubmissionById = async (id: number): Promise<ReferralSubmission
   const row = await ReferralSubmissionModel.findOne({ id }).lean();
   return row ? (row as unknown as ReferralSubmission) : null;
 };
+
