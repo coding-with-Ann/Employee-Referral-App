@@ -8,10 +8,7 @@ server/dist/
 .vite/
 
 # env files
-.env
-.env.*
-server/.env
-server/.env.*
+# Temporarily allowing .env files to be committed
 
 # runtime uploads (user files)
 server/uploads/
