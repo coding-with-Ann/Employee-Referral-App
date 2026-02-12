@@ -8,7 +8,6 @@ server/dist/
 .vite/
 
 # env files
-# Temporarily allowing .env files to be committed
 
 # runtime uploads (user files)
 server/uploads/
@@ -24,3 +23,5 @@ pnpm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+.env
+server/.env
