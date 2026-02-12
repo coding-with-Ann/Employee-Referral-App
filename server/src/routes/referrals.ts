@@ -6,6 +6,12 @@ import fs from 'fs/promises';
 import { validatePayload, MAX_RESUME_SIZE } from '../utils/validate.js';
 import { findSubmissionById, listSubmissions, saveSubmission } from '../storage/store.js';
 import type { ReferralSubmission } from '../types.js';
+import { cosineSimilarity } from '../utils/similarity.js';
+import {
+  extractResumeOverview,
+  extractResumeText,
+  WHY_GOOD_FIT_SIMILARITY_THRESHOLD
+} from '../utils/resume.js';
 
 const router = Router();
 
@@ -110,6 +116,39 @@ router.post('/', upload.single('resume'), async (req, res) => {
     return res.status(400).json({ errors });
   }
 
+  try {
+    const resumeText = await extractResumeText(file.path, file.originalname, file.mimetype);
+    const resumeOverview = extractResumeOverview(resumeText);
+
+    if (!resumeOverview || resumeOverview.length < 40) {
+      errors.push({
+        field: 'resume',
+        message: 'We could not read enough text from the uploaded resume for validation.'
+      });
+    } else {
+      const similarityScore = cosineSimilarity(resumeOverview, parsed.whyGoodFit);
+      console.log(
+        `[similarity-check] submission=candidate:${parsed.candidateEmail} score=${similarityScore.toFixed(4)} threshold=${WHY_GOOD_FIT_SIMILARITY_THRESHOLD.toFixed(2)}`
+      );
+      if (similarityScore > WHY_GOOD_FIT_SIMILARITY_THRESHOLD) {
+        errors.push({
+          field: 'whyGoodFit',
+          message: 'Why This Person Is a Good Fit is too similar to the resume overview. Please write a distinct referral note.'
+        });
+      }
+    }
+  } catch {
+    errors.push({
+      field: 'resume',
+      message: 'Unable to process the resume content for similarity validation.'
+    });
+  }
+
+  if (errors.length > 0) {
+    await fs.unlink(file.path).catch(() => undefined);
+    return res.status(400).json({ errors });
+  }
+
   const submission: ReferralSubmission = {
     createdAt: new Date().toISOString(),
     ...parsed,
@@ -126,4 +165,3 @@ router.post('/', upload.single('resume'), async (req, res) => {
 });
 
 export default router;
-
