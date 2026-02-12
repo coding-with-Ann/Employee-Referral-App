@@ -133,7 +133,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
       if (similarityScore > WHY_GOOD_FIT_SIMILARITY_THRESHOLD) {
         errors.push({
           field: 'whyGoodFit',
-          message: 'Why This Person Is a Good Fit is too similar to the resume overview. Please write a distinct referral note.'
+          message: 'Why This Person Is a Good Fit is too similar to the resume overview.'
         });
       }
     }
