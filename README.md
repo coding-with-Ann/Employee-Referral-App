@@ -1,7 +1,7 @@
 # Employee Referral Application
 
 Standalone employee referral app (React + TypeScript + Tailwind) with a Node + Express backend.
-Link: https://employee-referral-app-frontend.onrender.com/
+- Link: https://employee-referral-app-frontend.onrender.com/
 
 ## Defaults Used
 - Resume size limit: 5 MB
