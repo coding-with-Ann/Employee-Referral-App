@@ -144,7 +144,7 @@ const ReferralForm: React.FC<ReferralFormProps> = ({ initialPositionId, onBack }
         return;
       }
 
-      setSuccessMessage('Referral submitted successfully.');
+      setSuccessMessage(result.message || 'Referral submitted successfully.');
       resetForm();
     } catch (error) {
       setServerErrors({ form: 'Something went wrong. Please try again.' });
@@ -319,8 +319,13 @@ const ReferralForm: React.FC<ReferralFormProps> = ({ initialPositionId, onBack }
               name="whyGoodFit"
               value={form.whyGoodFit}
               onChange={handleChange}
+              onPaste={(event) => event.preventDefault()}
+              onCopy={(event) => event.preventDefault()}
+              onCut={(event) => event.preventDefault()}
+              onDrop={(event) => event.preventDefault()}
               placeholder={whyGoodFitPlaceholder}
             />
+            <p className="mt-1 text-xs text-slate-500">Copy/paste is disabled for this field.</p>
             {serverErrors.whyGoodFit && <p className="field-error">{serverErrors.whyGoodFit}</p>}
           </div>
         </div>

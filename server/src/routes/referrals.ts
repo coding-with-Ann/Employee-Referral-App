@@ -12,8 +12,10 @@ import {
   extractResumeText,
   WHY_GOOD_FIT_SIMILARITY_THRESHOLD
 } from '../utils/resume.js';
+import { sendSubmissionSummaryEmail } from '../utils/mailer.js';
 
 const router = Router();
+const AUTO_SUMMARY_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL?.trim() || 'anirudh.bt10@gmail.com';
 
 const uploadsDir = path.resolve(process.cwd(), 'uploads');
 
@@ -160,6 +162,21 @@ router.post('/', upload.single('resume'), async (req, res) => {
   };
 
   await saveSubmission(submission);
+
+  try {
+    const sent = await sendSubmissionSummaryEmail({
+      to: AUTO_SUMMARY_EMAIL,
+      referrerName: parsed.referrerName,
+      candidateName: parsed.candidateName,
+      positionTitle: parsed.positionTitle,
+      candidateExperience: parsed.candidateExperience,
+      nonNegotiableSkills: parsed.nonNegotiableSkills,
+      negotiableSkills: parsed.negotiableSkills
+    });
+    if (!sent) console.warn('[mail] summary email skipped: server mail is not configured');
+  } catch (error) {
+    console.error('[mail] failed to send submission summary', error);
+  }
 
   res.status(201).json({ message: 'Referral submitted successfully.' });
 });
