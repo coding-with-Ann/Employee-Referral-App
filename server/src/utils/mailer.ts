@@ -1,30 +1,4 @@
-import nodemailer from 'nodemailer';
-
-const parsePort = (raw: string | undefined, fallback: number) => {
-  const value = Number(raw || '');
-  return Number.isFinite(value) && value > 0 ? value : fallback;
-};
-
-const hasMailerConfig = () =>
-  Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
-
-const getTransporter = () => {
-  const host = process.env.SMTP_HOST || '';
-  const port = parsePort(process.env.SMTP_PORT, 587);
-  const secure = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true';
-  const user = process.env.SMTP_USER || '';
-  const pass = process.env.SMTP_PASS || '';
-
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure,
-    auth: { user, pass },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000
-  });
-};
+import { Resend } from 'resend';
 
 export interface SubmissionEmailInput {
   to: string;
@@ -37,14 +11,12 @@ export interface SubmissionEmailInput {
 }
 
 export const sendSubmissionSummaryEmail = async (payload: SubmissionEmailInput): Promise<boolean> => {
-  if (!hasMailerConfig()) {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  if (!apiKey) {
     return false;
   }
 
-  const from = process.env.EMAIL_FROM || process.env.SMTP_USER || '';
-  if (!from) {
-    return false;
-  }
+  const from = process.env.EMAIL_FROM?.trim() || 'onboarding@resend.dev';
 
   const requiredSkills = payload.nonNegotiableSkills.length > 0
     ? payload.nonNegotiableSkills.join(', ')
@@ -65,13 +37,17 @@ export const sendSubmissionSummaryEmail = async (payload: SubmissionEmailInput):
     `Other Skills: ${otherSkills}`
   ].join('\n');
 
-  const transporter = getTransporter();
-  await transporter.sendMail({
+  const resend = new Resend(apiKey);
+  const { error } = await resend.emails.send({
     from,
     to: payload.to,
     subject,
     text
   });
+
+  if (error) {
+    throw new Error(error.message);
+  }
 
   return true;
 };
